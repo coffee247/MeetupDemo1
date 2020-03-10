@@ -50,29 +50,30 @@ class database():
 
     '''method to populate a view with data
     query example: "select * from personsTable order by lastname asc" '''
-    def populateView(self, caller, query, orderBy_Field, idx, model):
+    def populateView(self, caller, query, model):
         myself = caller
         with myself.conn:
-            myself.colIndex = idx
-            myself.model = model
             data = self.db_doQuery(query)
             dataShape = np.array(data).shape
             for i in range(dataShape[0]):
-                myself.model.insertRows(i)
-                index = myself.model.createIndex(i, 0)
-                myself.model.setData(index, data[i][myself.colIndex], Qt.EditRole)
+                model.insertRows(i)
+                for j in range(dataShape[1]):
+                    # model.insertRows(i)
+                    index = model.createIndex(i, j)
+                    model.setData(index, data[i][j], Qt.EditRole)
+                    model.dataChanged.emit(index, index)
 
 
 
-def getPersonData(caller):
+def getCarData(caller):
     self = caller
-    # Fetch list of persons
+    # Fetch list of cars
     with self.conn:
-        query = f"select * from persons"
+        query = f"select * from car"
         data = self.dbase.db_doQuery(query)
         dataShape = np.array(data).shape
         for i in range(dataShape[0]):
             for j in range(dataShape[1]):
-                index = self.personsModel.createIndex(i, j)
-                self.personsModel.setData(index, data[i][j], Qt.EditRole)
-    self.PersonsView.setColumnHidden(0, True)
+                index = self.carsModel.createIndex(i, j)
+                self.carsModel.setData(index, data[i][j], Qt.EditRole)
+    self.carsView.setColumnHidden(0, True)
